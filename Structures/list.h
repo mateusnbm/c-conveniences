@@ -9,10 +9,12 @@
 #ifndef list_h
 #define list_h
 
+#define LIST_NO_ERROR 0
+#define LIST_MALLOC_ERROR 100
+
 typedef struct listNode {
     
-    int id;
-    
+    int sorter;
     void *data;
     
     struct listNode *previous;
@@ -20,6 +22,6 @@ typedef struct listNode {
     
 } ListNode;
 
-void demoList();
+int demoList();
 
 #endif /* list_h */

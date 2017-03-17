@@ -14,6 +14,7 @@
 
 typedef struct listNode {
     
+    int nodeID;
     int sorter;
     void *data;
     

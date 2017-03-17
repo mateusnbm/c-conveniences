@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		602D047F1E784582003A771E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 602D047E1E784582003A771E /* main.c */; };
 		602D04861E7845B6003A771E /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = 602D04851E7845B6003A771E /* list.c */; };
+		607C60801E7B427100619110 /* quicksort.c in Sources */ = {isa = PBXBuildFile; fileRef = 607C607E1E7B427100619110 /* quicksort.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,8 @@
 		602D047E1E784582003A771E /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		602D04851E7845B6003A771E /* list.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = list.c; sourceTree = "<group>"; };
 		602D04871E784F33003A771E /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
+		607C607E1E7B427100619110 /* quicksort.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = quicksort.c; sourceTree = "<group>"; };
+		607C607F1E7B427100619110 /* quicksort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = quicksort.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +66,8 @@
 				602D047E1E784582003A771E /* main.c */,
 				602D04871E784F33003A771E /* list.h */,
 				602D04851E7845B6003A771E /* list.c */,
+				607C607F1E7B427100619110 /* quicksort.h */,
+				607C607E1E7B427100619110 /* quicksort.c */,
 			);
 			path = Structures;
 			sourceTree = "<group>";
@@ -127,6 +132,7 @@
 			files = (
 				602D047F1E784582003A771E /* main.c in Sources */,
 				602D04861E7845B6003A771E /* list.c in Sources */,
+				607C60801E7B427100619110 /* quicksort.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,6 +261,7 @@
 				602D04841E784582003A771E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

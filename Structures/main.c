@@ -9,10 +9,13 @@
 #include <stdio.h>
 
 #include "list.h"
+#include "quicksort.h"
 
 int main(int argc, const char * argv[]) {
     
-    demoList();
+    //demoList();
+    
+    demoQuicksort();
     
     return 0;
 }

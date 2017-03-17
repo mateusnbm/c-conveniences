@@ -8,6 +8,7 @@
 
 #include "list.h"
 
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,6 +16,7 @@
  *
  * Allocate a new ListNode and initializes it with the given sorter and data pointer.
  *
+ * @param nodeID - An integer to identify the node.
  * @param sorter - An integer used to sort nodes.
  * @param data - Node's data pointer.
  * @param error - A pointer to an integer, used to return error codes.
@@ -23,7 +25,7 @@
  *
  */
 
-ListNode *newListNode(int sorter, void *data, int *error) {
+ListNode *newListNode(int nodeID, int sorter, void *data, int *error) {
     
     ListNode *node = (ListNode *) malloc(sizeof(ListNode));
     
@@ -33,6 +35,7 @@ ListNode *newListNode(int sorter, void *data, int *error) {
         
     }else{
         
+        node->nodeID = nodeID;
         node->sorter = sorter;
         node->data = data;
         
@@ -44,6 +47,27 @@ ListNode *newListNode(int sorter, void *data, int *error) {
     }
     
     return node;
+}
+
+/*
+ * Find the first node with the given nodeID on the list.
+ *
+ * @param list - The list to be searched.
+ * @param nodeID - The nodeID of the node to be found.
+ *
+ * @return If found, a pointer to the node. Else, NULL;
+ *
+ */
+
+ListNode *getNode(ListNode *list, int nodeID) {
+    
+    while (list != NULL && list->nodeID != nodeID) {
+        
+        list = list->next;
+        
+    }
+    
+    return list;
 }
 
 /*
@@ -128,11 +152,60 @@ ListNode *appendNodeOrdered(ListNode *list, ListNode *node) {
 
 /*
  *
- * <#Description#>
+ * Find and remove the first node identified by the given nodeID found on the list.
  *
- * @param list <#list description#>
+ * @param list - The list to be searched and updated.
+ * @param nodeID - The nodeID of the node to be removed.
  *
- * @return <#return value description#>
+ * @return - The list starting node.
+ *
+ */
+
+ListNode *removeNode(ListNode *list, int nodeID) {
+    
+    if (list != NULL) {
+        
+        if (list->nodeID == nodeID) {
+            
+            list = list->next;
+            list->previous = NULL;
+            
+        }else{
+            
+            ListNode *aux = list;
+            
+            while (aux->next != NULL && aux->next->nodeID != nodeID) {
+                
+                aux = aux->next;
+                
+            }
+            
+            ListNode *foundNode = aux->next;
+            
+            if (foundNode != NULL) {
+                
+                aux->next = foundNode->next;
+                aux->next->previous = aux;
+                
+                foundNode->next = NULL;
+                foundNode->previous = NULL;
+                
+            }
+            
+        }
+        
+    }
+    
+    return list;
+}
+
+/*
+ *
+ * Sort a list of nodes, according to the sorter parameter, using the
+ *
+ * @param list - The list to be sorted.
+ *
+ * @return - The list starting node.
  *
  */
 
@@ -211,14 +284,17 @@ void printNodes(ListNode *head) {
 int demoList() {
     
     int i;
+    int k;
     int error;
     
     ListNode *node;
     ListNode *head;
     
+    srand((unsigned int)time(NULL));
+    
     // Create a list.
     
-    head = newListNode(10, NULL, &error);
+    head = newListNode(10, 10, NULL, &error);
     
     if (error != LIST_NO_ERROR) {
         
@@ -226,13 +302,17 @@ int demoList() {
         
     }
     
-    // Insert nodes 20, 30, 40, 50, 60, 70, 80, 90, 100.
+    printf("Created a list.\n");
     
-    for (i = 1; i < 10; i++) {
+    printNodes(head);
+    
+    // Insert ten nodes with a random nodeID and sorter.
+    
+    for (i = 0; i < 10; i++) {
         
-        int id = (i + 1) * 10;
+        k = (rand() % 1000) + 1;
         
-        node = newListNode(id, NULL, &error);
+        node = newListNode(k, k, NULL, &error);
         
         if (error == LIST_NO_ERROR) {
             
@@ -242,29 +322,15 @@ int demoList() {
         
     }
     
-    // Insert node 55, ordered.
+    printf("Inserted ten random nodes.\n");
     
-    node = newListNode(55, NULL, &error);
+    printNodes(head);
     
-    if (error == LIST_NO_ERROR) {
-        
-        head = appendNodeOrdered(head, node);
-        
-    }
+    // Insert a node respecting the sorters order.
     
-    // Insert node 34 at the end of the list.
+    k = (rand() % 1000) + 1;
     
-    node = newListNode(34, NULL, &error);
-    
-    if (error == LIST_NO_ERROR) {
-        
-        head = appendNode(head, node);
-        
-    }
-    
-    // Insert node 2, ordered.
-    
-    node = newListNode(2, NULL, &error);
+    node = newListNode(k, k, NULL, &error);
     
     if (error == LIST_NO_ERROR) {
         
@@ -272,15 +338,19 @@ int demoList() {
         
     }
     
-    // Print nodes.
+    printf("Inserted a node (sorter = %i) respecting the list order.\n", k);
     
     printNodes(head);
     
     // Sort nodes and print them.
     
-    //
+    head = sortList(head);
     
-    // Free the pointers.
+    printf("Sorted the list.\n");
+    
+    printNodes(head);
+    
+    // Free dynamically allocated memory.
     
     releaseList(head);
     

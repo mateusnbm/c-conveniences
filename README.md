@@ -1,7 +1,17 @@
 # Data Structures and Conveniences
 
-1. Sorting Algorithms:
-⋅⋅1. Quicksort
+Data structures:
 
-1. Data Structures:
-⋅⋅1. Lists
+* ~~Binary Tree~~
+* Lists
+* ~~Stacks~~
+
+Other algorithms:
+
+* ~~Fast Fourrier Transform (FFT)~~
+
+Sorting algorithms:
+
+* ~~Bubble Sort~~
+* ~~Mergesort~~
+* Quicksort

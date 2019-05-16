@@ -1,39 +1,39 @@
-//
-//  list.c
-//  Structures
-//
-//  Created by Mateus Nunes de B Magalhaes on 3/14/17.
-//  Copyright © 2017 mateusnbm. All rights reserved.
-//
-
-#include "list.h"
-
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 /*
+ * list.c
+ * Structures
  *
- * Allocate a new ListNode and initializes it with the given sorter and data pointer.
- *
- * @param nodeID - An integer to identify the node.
- * @param sorter - An integer used to sort nodes.
- * @param data - Node's data pointer.
- * @param error - A pointer to an integer, used to return error codes.
- *
- * @return - On success, a pointer to the new node. On error, NULL.
+ * Created by Mateus Nunes de B Magalhaes on 3/14/17.
+ * Copyright © 2017 mateusnbm. All rights reserved.
  *
  */
 
-ListNode *newListNode(int nodeID, int sorter, void *data, int *error) {
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "list.h"
+
+/*
+ *
+ * Allocates a new list node and initializes it with the given parameters.
+ *
+ * @param nodeID - An integer that identifies the node.
+ * @param sorter - An integer that can be used to sort nodes.
+ * @param data - A void pointer that can be used to reference related data structures.
+ * @param error - A pointer to an integer that is used to pass along error codes.
+ *
+ * @return - On success, a pointer to the new node. Otherwise, NULL.
+ *
+ */
+
+ListNode * newListNode(int nodeID, int sorter, void * data, int * error) {
     
-    ListNode *node = (ListNode *) malloc(sizeof(ListNode));
+    ListNode * node = (ListNode *) malloc(sizeof(ListNode));
     
     if (node == NULL) {
         
-        *error = LIST_MALLOC_ERROR;
+        *error = LIST_ERROR_MALLOC;
         
-    }else{
+    } else {
         
         node->nodeID = nodeID;
         node->sorter = sorter;
@@ -42,58 +42,91 @@ ListNode *newListNode(int nodeID, int sorter, void *data, int *error) {
         node->previous = NULL;
         node->next = NULL;
         
-        *error = LIST_NO_ERROR;
+        *error = LIST_ERROR_NONE;
         
     }
     
     return node;
+    
 }
 
 /*
- * Find the first node with the given nodeID on the list.
  *
- * @param list - The list to be searched.
- * @param nodeID - The nodeID of the node to be found.
+ * Finds the first node of a list with the given ID.
  *
- * @return If found, a pointer to the node. Else, NULL;
+ * @param head - The list's head.
+ * @param nodeID - The node's ID.
+ *
+ * @return A pointer to the node, if, it was found. Otherwise, NULL.
  *
  */
 
-ListNode *getNode(ListNode *list, int nodeID) {
+ListNode * getNode(ListNode * head, int nodeID) {
     
-    while (list != NULL && list->nodeID != nodeID) {
+    while (head != NULL && head->nodeID != nodeID) {
         
-        list = list->next;
+        head = head->next;
         
     }
     
-    return list;
+    return head;
+    
 }
 
 /*
  *
- * Append a node to the end of the list.
+ * Appends a new node to the given list.
  *
- * @param head - The list starting node.
+ * @param head - The list's head.
  * @param node - The node to append.
+ * @param order - Determines if the insertion should organize the nodes in ascending, descending or no order at all.
  *
- * @return - The list starting node.
+ * @return - The list's starting node (it's head).
  *
  */
 
-ListNode *appendNode(ListNode *list, ListNode *node) {
+ListNode * appendNode(ListNode * head, ListNode * node, int order) {
     
-    if (list == NULL) {
+    if (head == NULL) {
         
-        list = node;
+        head = node;
         
-    }else{
+    } else if (node->sorter <= head->sorter && order == LIST_APPEND_ASCENDING) {
         
-        ListNode *aux = list;
+        node->next = head;
+        head->previous = node;
         
-        while (aux->next != NULL) {
+        head = node;
+        
+    } else if (node->sorter >= head->sorter && order == LIST_APPEND_DESCENDING) {
+        
+        node->next = head;
+        head->previous = node;
+        
+        head = node;
+        
+    } else {
+        
+        ListNode * aux = head;
+        
+        if (order == LIST_APPEND_UNORDERED) {
             
-            aux = aux->next;
+            while (aux->next != NULL) { aux = aux->next; }
+            
+        } else if (order == LIST_APPEND_ASCENDING) {
+            
+            while (aux->next != NULL && node->sorter >= aux->next->sorter) { aux = aux->next; }
+            
+        } else if (order == LIST_APPEND_DESCENDING) {
+            
+            while (aux->next != NULL && node->sorter <= aux->next->sorter) { aux = aux->next; }
+            
+        }
+        
+        if (aux->next != NULL) {
+            
+            aux->next->previous = node;
+            node->next = aux->next;
             
         }
         
@@ -102,77 +135,33 @@ ListNode *appendNode(ListNode *list, ListNode *node) {
         
     }
     
-    return list;
+    return head;
+    
 }
 
 /*
  *
- * Append a node to a list, inserting it after the node with the closest lower id.
+ * Finds and removes the first node that matches the given ID.
  *
- * @param head - The list starting node.
- * @param node - The node to append.
+ * @param head - The list's head.
+ * @param nodeID - The node's ID.
  *
- * @return - The list starting node.
- *
- */
-
-ListNode *appendNodeOrdered(ListNode *list, ListNode *node) {
-    
-    if (list == NULL) {
-        
-        list = node;
-        
-    }else if (list->sorter >= node->sorter) {
-        
-        node->next = list;
-        list->previous = node;
-        
-        list = node;
-        
-    }else{
-        
-        ListNode *aux = list;
-        
-        while (aux->next != NULL && aux->next->sorter <= node->sorter) {
-            
-            aux = aux->next;
-            
-        }
-        
-        aux->next->previous = node;
-        node->previous = aux;
-        
-        node->next = aux->next;
-        aux->next = node;
-        
-    }
-    
-    return list;
-}
-
-/*
- *
- * Find and remove the first node identified by the given nodeID found on the list.
- *
- * @param list - The list to be searched and updated.
- * @param nodeID - The nodeID of the node to be removed.
- *
- * @return - The list starting node.
+ * @return - The list's starting node (it's head).
  *
  */
 
-ListNode *removeNode(ListNode *list, int nodeID) {
+ListNode * removeNode(ListNode * head, int nodeID) {
     
-    if (list != NULL) {
+    if (head != NULL) {
         
-        if (list->nodeID == nodeID) {
+        if (head->nodeID == nodeID) {
             
-            list = list->next;
-            list->previous = NULL;
+            head = head->next;
+            head->previous = NULL;
             
         }else{
             
-            ListNode *aux = list;
+            ListNode * aux = head;
             
             while (aux->next != NULL && aux->next->nodeID != nodeID) {
                 
@@ -180,7 +169,7 @@ ListNode *removeNode(ListNode *list, int nodeID) {
                 
             }
             
-            ListNode *foundNode = aux->next;
+            ListNode * foundNode = aux->next;
             
             if (foundNode != NULL) {
                 
@@ -196,54 +185,38 @@ ListNode *removeNode(ListNode *list, int nodeID) {
         
     }
     
-    return list;
+    return head;
 }
 
 /*
  *
- * Sort a list of nodes, according to the sorter parameter, using the
+ * Frees the dynamically allocated memory used to manage the list.
  *
- * @param list - The list to be sorted.
- *
- * @return - The list starting node.
+ * @param head - The list's head.
  *
  */
 
-ListNode *sortList(ListNode *list) {
+void releaseList(ListNode * head) {
     
-    //
-    
-    return list;
-}
-
-/*
- * Free the memory pointers in a list.
- *
- * @param list - The list whose pointer should be freed.
- *
- */
-
-void releaseList(ListNode *list) {
-    
-    if (list->next != NULL) {
+    if (head->next != NULL) {
         
-        releaseList(list->next);
+        releaseList(head->next);
         
     }
     
-    free(list);
+    free(head);
     
 }
 
 /*
  *
- * Print all nodes id's from a given head.
+ * Prints the ID of every node on a list.
  *
- * @param head - The first node to print and start iterating.
+ * @param head - The list's head.
  *
  */
 
-void printNodes(ListNode *head) {
+void printListNodes(ListNode * head) {
     
     if (head == NULL) {
         
@@ -272,88 +245,5 @@ void printNodes(ListNode *head) {
         printf(".\n");
         
     }
-    
-}
-
-/*
- *
- * Demonstrates the capabilities available.
- *
- */
-
-int demoList() {
-    
-    int i;
-    int k;
-    int error;
-    
-    ListNode *node;
-    ListNode *head;
-    
-    srand((unsigned int)time(NULL));
-    
-    // Create a list.
-    
-    head = newListNode(10, 10, NULL, &error);
-    
-    if (error != LIST_NO_ERROR) {
-        
-        return error;
-        
-    }
-    
-    printf("Created a list.\n");
-    
-    printNodes(head);
-    
-    // Insert ten nodes with a random nodeID and sorter.
-    
-    for (i = 0; i < 10; i++) {
-        
-        k = (rand() % 1000) + 1;
-        
-        node = newListNode(k, k, NULL, &error);
-        
-        if (error == LIST_NO_ERROR) {
-            
-            head = appendNode(head, node);
-            
-        }
-        
-    }
-    
-    printf("Inserted ten random nodes.\n");
-    
-    printNodes(head);
-    
-    // Insert a node respecting the sorters order.
-    
-    k = (rand() % 1000) + 1;
-    
-    node = newListNode(k, k, NULL, &error);
-    
-    if (error == LIST_NO_ERROR) {
-        
-        head = appendNodeOrdered(head, node);
-        
-    }
-    
-    printf("Inserted a node (sorter = %i) respecting the list order.\n", k);
-    
-    printNodes(head);
-    
-    // Sort nodes and print them.
-    
-    head = sortList(head);
-    
-    printf("Sorted the list.\n");
-    
-    printNodes(head);
-    
-    // Free dynamically allocated memory.
-    
-    releaseList(head);
-    
-    return error;
     
 }

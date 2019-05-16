@@ -1,16 +1,29 @@
-//
-//  quicksort.c
-//  Structures
-//
-//  Created by Mateus Nunes de B Magalhaes on 3/16/17.
-//  Copyright © 2017 mateusnbm. All rights reserved.
-//
-
-#include "quicksort.h"
+/*
+ * quicksort.c
+ * Structures
+ *
+ * Created by Mateus Nunes de B Magalhaes on 3/16/17.
+ * Copyright © 2017 mateusnbm. All rights reserved.
+ *
+ */
 
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "quicksort.h"
+
+/*
+ *
+ * Choses a pivot and places smaller numbers to the left of it and bigger numbers to the right.
+ *
+ * @param arr - The array of integers.
+ * @param i0 - The lower bound of the range of integers that should be sorted.
+ * @param iX - The upper bound of the range of integers that should be sorted.
+ *
+ * @return - The index of the pivot if the array was properly sorted.
+ *
+ */
 
 int partition(int arr[], int i0, int iX) {
     
@@ -62,6 +75,16 @@ int partition(int arr[], int i0, int iX) {
     return iX;
 }
 
+/*
+ *
+ * Sorts an array of integers in-place using the Quicksort algorithm.
+ *
+ * @param arr - The array of integers.
+ * @param i0 - The lower bound of the range of integers that should be sorted.
+ * @param iX - The upper bound of the range of integers that should be sorted.
+ *
+ */
+
 void quicksort(int arr[], int i0, int iX) {
     
     if (i0 < iX) {
@@ -75,7 +98,16 @@ void quicksort(int arr[], int i0, int iX) {
     
 }
 
-void printArray(int arr[], int size) {
+/*
+ *
+ * Prints every number on an array of integers.
+ *
+ * @param arr - The array of integers.
+ * @param size - The size of the array.
+ *
+ */
+
+void quicksortPrintIntegers(int arr[], int size) {
     
     int i;
     
@@ -86,44 +118,5 @@ void printArray(int arr[], int size) {
     }
     
     printf("\n");
-    
-}
-
-void demoQuicksort() {
-    
-    int i;
-    int numbersCount = 1000;
-    
-    int *arr = (int *) malloc(numbersCount * sizeof(int));
-    
-    srand((int)time(NULL));
-    
-    /*  Populate the array with random numbers. */
-    
-    for (i = 0; i < numbersCount; i++) {
-        
-        arr[i] = (rand() % numbersCount) + 1;
-        
-    }
-    
-    /* Print the unsorted array. */
-    
-    printf("Unsorted array:\n");
-    
-    printArray(arr, numbersCount);
-    
-    /* Sort the array using quicksort. */
-    
-    quicksort(arr, 0, numbersCount-1);
-    
-    /* Print the sorted array. */
-    
-    printf("Sorted array:\n");
-    
-    printArray(arr, numbersCount);
-    
-    /* Free the memory dynamically allocated. */
-    
-    free(arr);
     
 }

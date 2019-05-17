@@ -12,19 +12,22 @@
 
 #include "list.h"
 #include "quicksort.h"
+#include "bubblesort.h"
 
-int demoList();
+void demoList();
+void demoQuicksort();
+void demoBubblesort();
 
 int main(int argc, const char * argv[]) {
     
-    demoList();
-    
+    //demoList();
     //demoQuicksort();
+    demoBubblesort();
     
     return 0;
 }
 
-int demoList() {
+void demoList() {
     
     int i;
     int k;
@@ -39,11 +42,7 @@ int demoList() {
     
     head = newListNode(10, 10, NULL, &error);
     
-    if (error != LIST_ERROR_NONE) {
-        
-        return error;
-        
-    }
+    if (error != LIST_ERROR_NONE) { }
     
     printf("Created a list.\n");
     
@@ -89,8 +88,6 @@ int demoList() {
     
     releaseList(head);
     
-    return error;
-    
 }
 
 void demoQuicksort() {
@@ -119,6 +116,45 @@ void demoQuicksort() {
     /* Sort the array using quicksort. */
     
     quicksort(arr, 0, numbersCount-1);
+    
+    /* Print the sorted array. */
+    
+    printf("Sorted array:\n");
+    
+    quicksortPrintIntegers(arr, numbersCount);
+    
+    /* Free the memory dynamically allocated. */
+    
+    free(arr);
+    
+}
+
+void demoBubblesort() {
+    
+    int i;
+    int numbersCount = 10;
+    
+    int *arr = (int *) malloc(numbersCount * sizeof(int));
+    
+    srand((int)time(NULL));
+    
+    /*  Populate the array with random numbers. */
+    
+    for (i = 0; i < numbersCount; i++) {
+        
+        arr[i] = (rand() % numbersCount) + 1;
+        
+    }
+    
+    /* Print the unsorted array. */
+    
+    printf("Unsorted array:\n");
+    
+    quicksortPrintIntegers(arr, numbersCount);
+    
+    /* Sort the array using quicksort. */
+    
+    bubblesort(arr, numbersCount);
     
     /* Print the sorted array. */
     

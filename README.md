@@ -12,6 +12,6 @@ Other algorithms:
 
 Sorting algorithms:
 
-* ~~Bubble Sort~~
+* Bubble Sort
 * ~~Mergesort~~
 * Quicksort

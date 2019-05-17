@@ -10,6 +10,7 @@
 		602D047F1E784582003A771E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 602D047E1E784582003A771E /* main.c */; };
 		602D04861E7845B6003A771E /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = 602D04851E7845B6003A771E /* list.c */; };
 		607C60801E7B427100619110 /* quicksort.c in Sources */ = {isa = PBXBuildFile; fileRef = 607C607E1E7B427100619110 /* quicksort.c */; };
+		60C35180228E2E8400A60D7E /* bubblesort.c in Sources */ = {isa = PBXBuildFile; fileRef = 60C3517F228E2E8400A60D7E /* bubblesort.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +32,8 @@
 		602D04871E784F33003A771E /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
 		607C607E1E7B427100619110 /* quicksort.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = quicksort.c; sourceTree = "<group>"; };
 		607C607F1E7B427100619110 /* quicksort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = quicksort.h; sourceTree = "<group>"; };
+		60C3517E228E2E8400A60D7E /* bubblesort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bubblesort.h; sourceTree = "<group>"; };
+		60C3517F228E2E8400A60D7E /* bubblesort.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bubblesort.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +71,8 @@
 				602D04851E7845B6003A771E /* list.c */,
 				607C607F1E7B427100619110 /* quicksort.h */,
 				607C607E1E7B427100619110 /* quicksort.c */,
+				60C3517E228E2E8400A60D7E /* bubblesort.h */,
+				60C3517F228E2E8400A60D7E /* bubblesort.c */,
 			);
 			path = Structures;
 			sourceTree = "<group>";
@@ -113,6 +118,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 602D04721E784582003A771E;
@@ -131,6 +137,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				602D047F1E784582003A771E /* main.c in Sources */,
+				60C35180228E2E8400A60D7E /* bubblesort.c in Sources */,
 				602D04861E7845B6003A771E /* list.c in Sources */,
 				607C60801E7B427100619110 /* quicksort.c in Sources */,
 			);

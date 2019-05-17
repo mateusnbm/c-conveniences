@@ -13,16 +13,19 @@
 #include "list.h"
 #include "quicksort.h"
 #include "bubblesort.h"
+#include "mergesort.h"
 
-void demoList();
-void demoQuicksort();
-void demoBubblesort();
+void demoList(void);
+void demoQuicksort(void);
+void demoBubblesort(void);
+void demoMergesort(void);
 
 int main(int argc, const char * argv[]) {
     
     //demoList();
     //demoQuicksort();
-    demoBubblesort();
+    //demoBubblesort();
+    demoMergesort();
     
     return 0;
 }
@@ -155,6 +158,45 @@ void demoBubblesort() {
     /* Sort the array using quicksort. */
     
     bubblesort(arr, numbersCount);
+    
+    /* Print the sorted array. */
+    
+    printf("Sorted array:\n");
+    
+    quicksortPrintIntegers(arr, numbersCount);
+    
+    /* Free the memory dynamically allocated. */
+    
+    free(arr);
+    
+}
+
+void demoMergesort() {
+    
+    int i;
+    int numbersCount = 10;
+    
+    int *arr = (int *) malloc(numbersCount * sizeof(int));
+    
+    srand((int)time(NULL));
+    
+    /*  Populate the array with random numbers. */
+    
+    for (i = 0; i < numbersCount; i++) {
+        
+        arr[i] = (rand() % numbersCount) + 1;
+        
+    }
+    
+    /* Print the unsorted array. */
+    
+    printf("Unsorted array:\n");
+    
+    quicksortPrintIntegers(arr, numbersCount);
+    
+    /* Sort the array using quicksort. */
+    
+    cmergesort(arr, 0, numbersCount-1);
     
     /* Print the sorted array. */
     

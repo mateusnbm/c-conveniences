@@ -10,6 +10,7 @@
 		602D047F1E784582003A771E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 602D047E1E784582003A771E /* main.c */; };
 		602D04861E7845B6003A771E /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = 602D04851E7845B6003A771E /* list.c */; };
 		607C60801E7B427100619110 /* quicksort.c in Sources */ = {isa = PBXBuildFile; fileRef = 607C607E1E7B427100619110 /* quicksort.c */; };
+		60BDA994228F67B200C53D76 /* stack.c in Sources */ = {isa = PBXBuildFile; fileRef = 60BDA993228F67B200C53D76 /* stack.c */; };
 		60C35180228E2E8400A60D7E /* bubblesort.c in Sources */ = {isa = PBXBuildFile; fileRef = 60C3517F228E2E8400A60D7E /* bubblesort.c */; };
 		60C35183228E4C5000A60D7E /* mergesort.c in Sources */ = {isa = PBXBuildFile; fileRef = 60C35182228E4C5000A60D7E /* mergesort.c */; };
 /* End PBXBuildFile section */
@@ -33,6 +34,8 @@
 		602D04871E784F33003A771E /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
 		607C607E1E7B427100619110 /* quicksort.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = quicksort.c; sourceTree = "<group>"; };
 		607C607F1E7B427100619110 /* quicksort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = quicksort.h; sourceTree = "<group>"; };
+		60BDA992228F67B200C53D76 /* stack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stack.h; sourceTree = "<group>"; };
+		60BDA993228F67B200C53D76 /* stack.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = stack.c; sourceTree = "<group>"; };
 		60C3517E228E2E8400A60D7E /* bubblesort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bubblesort.h; sourceTree = "<group>"; };
 		60C3517F228E2E8400A60D7E /* bubblesort.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bubblesort.c; sourceTree = "<group>"; };
 		60C35181228E4C5000A60D7E /* mergesort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mergesort.h; sourceTree = "<group>"; };
@@ -72,6 +75,8 @@
 				602D047E1E784582003A771E /* main.c */,
 				602D04871E784F33003A771E /* list.h */,
 				602D04851E7845B6003A771E /* list.c */,
+				60BDA992228F67B200C53D76 /* stack.h */,
+				60BDA993228F67B200C53D76 /* stack.c */,
 				607C607F1E7B427100619110 /* quicksort.h */,
 				607C607E1E7B427100619110 /* quicksort.c */,
 				60C3517E228E2E8400A60D7E /* bubblesort.h */,
@@ -141,6 +146,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60BDA994228F67B200C53D76 /* stack.c in Sources */,
 				60C35183228E4C5000A60D7E /* mergesort.c in Sources */,
 				602D047F1E784582003A771E /* main.c in Sources */,
 				60C35180228E2E8400A60D7E /* bubblesort.c in Sources */,

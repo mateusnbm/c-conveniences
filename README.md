@@ -4,7 +4,7 @@ Data structures:
 
 * ~~Binary Tree~~
 * Lists
-* ~~Stacks~~
+* Stacks
 
 Other algorithms:
 

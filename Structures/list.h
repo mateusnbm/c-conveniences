@@ -11,7 +11,7 @@
 #define list_h
 
 #define LIST_ERROR_NONE 0
-#define LIST_ERROR_MALLOC 100
+#define LIST_ERROR_MALLOC 1
 
 #define LIST_APPEND_UNORDERED 0
 #define LIST_APPEND_ASCENDING 1

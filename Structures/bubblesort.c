@@ -3,7 +3,7 @@
  * Structures
  *
  * Created by Mateus Nunes de B Magalhaes on 5/16/19.
- * Copyright © 2017 mateusnbm. All rights reserved.
+ * Copyright © 2019 mateusnbm. All rights reserved.
  *
  */
 

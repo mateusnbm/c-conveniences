@@ -11,11 +11,13 @@
 #include <stdlib.h>
 
 #include "list.h"
+#include "stack.h"
 #include "quicksort.h"
 #include "bubblesort.h"
 #include "mergesort.h"
 
 void demoList(void);
+void demoStack(void);
 void demoQuicksort(void);
 void demoBubblesort(void);
 void demoMergesort(void);
@@ -23,9 +25,10 @@ void demoMergesort(void);
 int main(int argc, const char * argv[]) {
     
     //demoList();
+    demoStack();
     //demoQuicksort();
     //demoBubblesort();
-    demoMergesort();
+    //demoMergesort();
     
     return 0;
 }
@@ -91,6 +94,41 @@ void demoList() {
     
     releaseList(head);
     
+}
+
+void demoStack() {
+    
+    int i;
+    int error = STACK_ERROR_NONE;
+    char str[] = "...ssenkrad olleH\0";
+    
+    Stack * stack = newStack(STACK_POLICY_LIFO, &error);
+    
+    printf("Stacking: ");
+    
+    for (i = 0; str[i] != '\0'; i++) {
+        
+        StackItem * item = newStackItem(&error);
+        
+        item->cchar = str[i];
+        
+        push(stack, item);
+        
+        printf("%c", str[i]);
+        
+    }
+    
+    printf("\n Popping: ");
+    
+    for (; i > 0; i--) {
+        
+        StackItem * item = pop(stack);
+        
+        printf("%c", item->cchar);
+        
+    }
+    
+    printf("\n");
 }
 
 void demoQuicksort() {

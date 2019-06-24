@@ -1,6 +1,6 @@
 /*
- * bubblesort.c
- * Structures
+ *
+ * bubblesort.cpp
  *
  * Created by Mateus Nunes de B Magalhaes on 5/16/19.
  * Copyright © 2019 mateusnbm. All rights reserved.
@@ -19,26 +19,26 @@
  */
 
 void bubblesort(int arr[], int size) {
-    
+
     int i, aux, exchange;
-    
+
     do {
-        
+
         exchange = 0;
-        
+
         for (i = 0; i < (size-1); i++) {
-            
+
             if (arr[i] > arr[i+1]) {
-                
+
                 exchange = 1;
                 aux = arr[i+1];
                 arr[i+1] = arr[i];
                 arr[i] = aux;
-                
+
             }
-            
+
         }
-        
+
     } while (exchange == 1);
-    
+
 }

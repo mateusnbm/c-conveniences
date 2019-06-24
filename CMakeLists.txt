@@ -41,7 +41,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wincompatible-pointer-types-discards-qu
 #
 #
 
-add_subdirectory(${ROOT_PATH}/algorithms)
-add_subdirectory(${ROOT_PATH}/structures)
-add_subdirectory(${ROOT_PATH}/imgconveniences)
-add_subdirectory(${ROOT_PATH}/demos)
+add_subdirectory(${ROOT_PATH}/NBMAlgorithms)
+add_subdirectory(${ROOT_PATH}/NBMStructures)
+add_subdirectory(${ROOT_PATH}/NBMImageConveniences)
+add_subdirectory(${ROOT_PATH}/NBMDemos)

@@ -16,10 +16,10 @@ int main(int argc, const char * argv[]) {
 
     NBMImage * image = NULL;
 
-    loadImageFromPath("NBMDemos/images/a3x3x1.png", &image);
+    //loadImageFromPath("NBMDemos/images/a3x3x1.png", &image);
     //loadImageFromPath("NBMDemos/images/parrot1bit.png", &image);
     //loadImageFromPath("NBMDemos/images/parrot4bit.png", &image);
-    //loadImageFromPath("NBMDemos/images/lena220x220.png", &image);
+    loadImageFromPath("NBMDemos/images/lena220x220.png", &image);
 
     if (image != NULL) {
 

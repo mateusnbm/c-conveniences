@@ -190,6 +190,12 @@ char loadImageFromCxImage(NBMImage * image, CxImage * cxImage) {
 	unsigned char * baddr = cxImage->GetBits();
 	unsigned char * caddr = cxImage->GetBits();
 
+	unsigned int byteIndex = 0;
+	unsigned char byteValue = 0;
+	unsigned char bitIndex = 0;
+	unsigned char bitValue = 0;
+	unsigned int colorIndex = 0;
+
 	unsigned char bpp = cxImage->GetBpp();
 	unsigned int width = cxImage->GetWidth();
 	unsigned int height = cxImage->GetHeight();
@@ -213,9 +219,6 @@ char loadImageFromCxImage(NBMImage * image, CxImage * cxImage) {
 
 	} else {
 
-		printf("bpp %d\n", bpp);
-		printf("bytes per row %d\n", bytesPerRow);
-
 		switch (bpp) {
 
 			case 1: {
@@ -226,12 +229,11 @@ char loadImageFromCxImage(NBMImage * image, CxImage * cxImage) {
 
 					for (column = 0; column < width; column++, lindex++) {
 
-						unsigned int byteIndex = (column >> 3);
-						unsigned char byteValue = caddr[byteIndex];
-						unsigned char bitIndex = (8 - (column % 8));
-						unsigned char bitOffset = (bitIndex-1);
-						unsigned char bitValue = ((byteValue & (0x1 << bitOffset)) >> bitOffset);
-						unsigned int colorIndex = (bitValue * sizeof(RGBQUAD));
+						byteIndex = (column >> 3);
+						byteValue = caddr[byteIndex];
+						bitIndex = (7 - (column % 8));
+						bitValue = ((byteValue & (0x1 << bitIndex)) >> bitIndex);
+						colorIndex = (bitValue * sizeof(RGBQUAD));
 
 						r[lindex] = (unsigned char) bmpColorTable[colorIndex];
 						g[lindex] = r[lindex];
@@ -245,22 +247,19 @@ char loadImageFromCxImage(NBMImage * image, CxImage * cxImage) {
 
 			case 4: {
 
-				unsigned char * baddr_ = (unsigned char *) cxImage->GetDIB();
-				unsigned char * caddr_ = (unsigned char *) (baddr_ + sizeof(BITMAPINFOHEADER));
-
 				for (row = (height-1); row >= 0; row--) {
 
 					caddr = (baddr + (row * bytesPerRow));
 
 					for (column = 0; column < width; column++, lindex++) {
 
-						uint8_t iDstVal = caddr[(column*bpp >> 3)];
-		                uint8_t pos = (uint8_t)(4 * (1 - column % 2));
-		                iDstVal &= (0x0F << pos);
-		                uint8_t idx = (uint8_t)(iDstVal >> pos);
-		                int32_t ldx = idx * sizeof(RGBQUAD);
+						byteIndex = ((column * 4) >> 3);
+						byteValue = caddr[byteIndex];
+						lsbIndex = ((1 - (column % 2)) * 4);
+						bitValue = ((byteValue & (0xF << lsbIndex)) >> lsbIndex);
+						colorIndex = (bitValue * sizeof(RGBQUAD));
 
-						r[lindex] = (unsigned char) caddr_[ldx];
+						r[lindex] = (unsigned char) bmpColorTable[colorIndex];
 						g[lindex] = r[lindex];
 						b[lindex] = r[lindex];
 

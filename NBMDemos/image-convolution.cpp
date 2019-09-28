@@ -23,7 +23,15 @@ int main(int argc, const char * argv[]) {
 
     if (image != NULL) {
 
-        printf("width %i height %i\n", image->width, image->height);
+        NBMImage * duplicate = duplicateImage(image);
+
+        if (duplicate != NULL) {
+
+            // ...
+
+            persistImage(duplicate, "NBMDemos/images/mateus.png", ImageFileFormatPNG);
+
+        }
 
         releaseImage(image);
 

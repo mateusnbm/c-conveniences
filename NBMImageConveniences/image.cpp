@@ -8,13 +8,50 @@
  */
 
 #include "image.h"
-#include <CxImage/CxImage/ximage.h>
 
 /*
  *
- * ...
+ * This function returns the minimum number of bits per pixels that each
+ * supported image file format accepts.
  *
- * @param data ...
+ * @param format The image file format.
+ *
+ * @return Minimum bits per pixels that the formats accepts.
+ *
+ */
+
+unsigned char minimumBppForFileFormat(ImageFileFormat format) {
+
+	unsigned char bpp;
+
+    switch (format) {
+
+		case ImageFileFormatBMP:
+			bpp = 24;
+			break;
+
+		case ImageFileFormatJPG:
+			bpp = 8;
+			break;
+
+		case ImageFileFormatUnknown:
+		case ImageFileFormatPNG:
+		case ImageFileFormatTIFFBigEndian:
+		case ImageFileFormatTIFFLittleEndian:
+			bpp = 1;
+			break;
+
+	}
+
+    return bpp;
+
+}
+
+/*
+ *
+ * Discovers the image file format of a given data stream.
+ *
+ * @param data The data stream.
  *
  */
 
@@ -56,13 +93,14 @@ ImageFileFormat discoverImageFileFormatFromData(const unsigned char * data) {
 
 /*
  *
- * ...
+ * Translates our own ImageFileFormat enumeration to the CxImage proprietary
+ * file format enumeration.
  *
- * @param fileFormat ...
+ * @param fileFormat The image file format.
  *
  */
 
-uint32_t translateFileFormatToCxImageFormat(ImageFileFormat fileFormat) {
+uint32_t translateImageFormatToCxImageFormat(ImageFileFormat fileFormat) {
 
 	uint32_t format = CXIMAGE_FORMAT_UNKNOWN;
 
@@ -92,67 +130,73 @@ uint32_t translateFileFormatToCxImageFormat(ImageFileFormat fileFormat) {
 }
 
 /*
- * ...
+ * Calculates the size of a given file.
  *
- * @param path ...
+ * @param path Path to a file.
  *
- * @return ...
+ * @return This function returns the number of bytes in the file at the given
+ *         path or '-1L' if it fails to computer the file's length.
  *
  */
 
-long int calculateBinaryStreamSize(FILE * file_pointer) {
+long int calculateBinaryStreamLength(FILE * file_pointer) {
 
-	long int size = -1L;
+	long int length = -1L;
 	long int original_location = ftell(file_pointer);
 
 	if (original_location != -1L && fseek(file_pointer, 0, SEEK_END) == 0) {
 
-		size = ftell(file_pointer);
+		length = ftell(file_pointer);
 
 		if (fseek(file_pointer, original_location, SEEK_SET) != 0) {
 
-			size = -1L;
+			length = -1L;
 
 		}
 
 	}
 
-	return size;
+	return length;
 
 }
 
 /*
  *
- * ...
+ * Opens a file at a given path and loads its content into a buffer of
+ * unsigned chars. The number of bytes read is returned through a pointer to
+ * an integer.
  *
- * @param path ...
- * @param data ...
- * @param len ...
+ * @param path Path to a file.
+ * @param data Address of a pointer to an array of unsigned chars.
+ * @param len Pointer to an integer that will be updated with the number
+ *        of bytes read from the file.
  *
  */
 
-void loadDataFromFilePath(char * path, unsigned char ** data, long int * len) {
+void loadDataFromFilePath(unsigned char ** data, long int * len, char * path) {
 
 	long int read = 0;
-	long int size = 0;
+	long int length = 0;
 	unsigned char * buffer = NULL;
 	FILE * file_pointer = fopen(path, "rb");
 
+	*data = NULL;
+
 	if (file_pointer != NULL) {
 
-		size = calculateBinaryStreamSize(file_pointer);
+		length = calculateBinaryStreamLength(file_pointer);
 
-		if (size != -1L) {
+		if (length != -1L) {
 
-			buffer = (unsigned char *) malloc(sizeof(unsigned char)*size);
+			buffer = (unsigned char *) malloc(sizeof(unsigned char)*length);
 
 			if (buffer != NULL) {
 
-				read = fread(buffer, sizeof(unsigned char), size, file_pointer);
+				read = fread(buffer, sizeof(unsigned char), length, file_pointer);
 
-				if (read == size) {
+				if (read == length) {
 
-					*len = size;
+					*len = length;
 					*data = buffer;
 
 				} else {
@@ -243,7 +287,6 @@ char loadImageFrom1BppCxImage(NBMImage * image, CxImage * cxImage) {
 
 		}
 
-		image->bpp = bpp;
 		image->width = width;
 		image->height = height;
 
@@ -329,7 +372,6 @@ char loadImageFrom4BppCxImage(NBMImage * image, CxImage * cxImage) {
 
 		}
 
-		image->bpp = bpp;
 		image->width = width;
 		image->height = height;
 
@@ -400,7 +442,6 @@ char loadImageFrom8BppCxImage(NBMImage * image, CxImage * cxImage) {
 
 		}
 
-		image->bpp = bpp;
 		image->width = width;
 		image->height = height;
 
@@ -463,15 +504,14 @@ char loadImageFrom24BppCxImage(NBMImage * image, CxImage * cxImage) {
 
 			for (column = 0; column < width; column++, lindex++) {
 
-				r[lindex] = (unsigned char) (*caddr++);
-				g[lindex] = (unsigned char) (*caddr++);
 				b[lindex] = (unsigned char) (*caddr++);
+				g[lindex] = (unsigned char) (*caddr++);
+				r[lindex] = (unsigned char) (*caddr++);
 
 			}
 
 		}
 
-		image->bpp = bpp;
 		image->width = width;
 		image->height = height;
 
@@ -529,12 +569,72 @@ char loadImageFromCxImage(NBMImage * image, CxImage * cxImage) {
 
 /*
  *
+ * ...
+ *
+ * @param image ...
+ * @param path ...
+ *
+ */
+
+void load24BppCxImageFromImage(CxImage * cxImage, NBMImage * image, ImageFileFormat format) {
+
+	if (cxImage != NULL && image != NULL) {
+
+		long int row = 0;
+		long int column = 0;
+		long int pindex = 0;
+
+		uint32_t width = (uint32_t) image->width;
+		uint32_t height = (uint32_t) image->height;
+		uint32_t cxImageFormat  = translateImageFormatToCxImageFormat(format);
+
+		cxImage->Create(width, height, 24, cxImageFormat);
+
+		unsigned char * baddr = cxImage->GetBits();
+		unsigned char * caddr = cxImage->GetBits();
+		unsigned int bytesPerRow = cxImage->GetEffWidth();
+
+        for (row = 0; row < height; row++) {
+
+            caddr = baddr + (height - 1 - row) * bytesPerRow;
+
+			for (column = 0; column < width; column++, pindex++) {
+
+                *caddr++ = static_cast <uint8_t> (image->b[pindex]);
+                *caddr++ = static_cast <uint8_t> (image->g[pindex]);
+                *caddr++ = static_cast <uint8_t> (image->r[pindex]);
+
+			}
+
+		}
+
+	}
+
+}
+
+/*
+ *
+ * ...
+ *
+ * @param cxImage ...
+ * @param image ...
+ *
+ */
+
+void loadCxImageFromImage(CxImage * cxImage, NBMImage * image, ImageFileFormat format) {
+
+	load24BppCxImageFromImage(cxImage, image, format);
+
+}
+
+/*
+ *
  * Generates an image representation (NBMImage) from the image
  * referenced by the given file path. This function supports the
  * PNG, JPEG, BMP and TIFF file formats.
  *
  * If the image was successfully loaded, the image pointer will
- * reference a valid instance of the structure NBMImage initialized
+ * reference a valid instance of the structure NBMImage initialized,
  * with the data extracted from the file at the given path.
  *
  * @param path Path to an image file.
@@ -548,20 +648,18 @@ void loadImageFromPath(char * path, NBMImage ** image) {
 	unsigned char * buffer = NULL;
 	CxImage * cxImage = new CxImage;
 
-	ImageFileFormat imageFileFormat;
-	uint32_t cxImageFormat;
-	NBMImage * img;
+	*image = NULL;
 
-	loadDataFromFilePath(path, &buffer, &length);
+	loadDataFromFilePath(&buffer, &length, path);
 
 	if (buffer != NULL) {
 
-		imageFileFormat = discoverImageFileFormatFromData(buffer);
-		cxImageFormat = translateFileFormatToCxImageFormat(imageFileFormat);
+		ImageFileFormat imageFileFormat = discoverImageFileFormatFromData(buffer);
+		uint32_t cxImageFormat = translateImageFormatToCxImageFormat(imageFileFormat);
 
 		if (cxImage->Decode(buffer, (unsigned int) length, cxImageFormat) == true) {
 
-			img = (NBMImage *) malloc(sizeof(NBMImage));
+			NBMImage * img = (NBMImage *) malloc(sizeof(NBMImage));
 
 			if (img != NULL) {
 
@@ -577,9 +675,63 @@ void loadImageFromPath(char * path, NBMImage ** image) {
 
 	}
 
-	cxImage->Destroy();
-	delete cxImage;
 	free(buffer);
+
+}
+
+/*
+ *
+ * This function writes a NBMImage to a given file path. The current
+ * implementation will store all images with 24 bits per pixel and 72
+ * dots per inch on both x and y axis.
+ *
+ * @param image The NBMImage to persist.
+ * @param path The path to store the image.
+ * @param format The format of the file.
+ *
+ * @return Returns 0 when the operation succeeds.
+ *
+ */
+
+char persistImage(NBMImage * image, char * path, ImageFileFormat format) {
+
+	char status = -1;
+	CxImage * cxImage = new CxImage;
+	FILE * file_pointer = fopen(path, "wb+");
+	uint32_t cxImageFormat  = translateImageFormatToCxImageFormat(format);
+
+	if (file_pointer != NULL && format != ImageFileFormatUnknown) {
+
+		int32_t length = 0;
+		uint8_t * data = NULL;
+		long int wrote = 0;
+
+		loadCxImageFromImage(cxImage, image, format);
+		cxImage->Encode(data, length, cxImageFormat);
+		cxImage->SetXDPI(72);
+		cxImage->SetYDPI(72);
+
+		//image.SetCodecOption(COMPRESSION_JPEG, CXIMAGE_FORMAT_TIF);
+        //image.SetJpegQuality(90);
+		//image.SetCodecOption(8, CXIMAGE_FORMAT_PNG);
+		//image.SetJpegQuality(90);
+
+		wrote = fwrite(data, sizeof(unsigned char), length, file_pointer);
+
+		if (wrote == length) {
+
+			cxImage->Destroy();
+			delete cxImage;
+			free(data);
+			fclose(file_pointer);
+
+			status = 0;
+
+		}
+
+	}
+
+	return status;
 
 }
 
@@ -588,17 +740,62 @@ void loadImageFromPath(char * path, NBMImage ** image) {
  * ...
  *
  * @param image ...
- * @param path ...
  *
  */
 
- char persistImage(NBMImage * image, char * path) {
+NBMImage * duplicateImage(NBMImage * image) {
 
-	 // ...
+	NBMImage * duplicate = NULL;
 
-	 return 0;
+	if (image != NULL) {
 
- }
+		duplicate = (NBMImage *) malloc(sizeof(NBMImage));
+
+		if (duplicate != NULL) {
+
+			char fail = 0;
+
+			unsigned int w = image->width;
+			unsigned int h = image->height;
+			unsigned int l = ((w * h) * sizeof(unsigned char));
+
+			duplicate->width = w;
+			duplicate->height = h;
+
+			duplicate->r = (unsigned char *) malloc(l);
+			duplicate->g = (unsigned char *) malloc(l);
+			duplicate->b = (unsigned char *) malloc(l);
+
+			fail = duplicate->r == NULL || duplicate->g == NULL || duplicate->b == NULL;
+
+			if (fail == 0) {
+
+				void * a = memcpy(duplicate->r, image->r, l);
+				void * b = memcpy(duplicate->g, image->g, l);
+				void * c = memcpy(duplicate->b, image->b, l);
+
+				fail = a == NULL || b == NULL || c == NULL;
+
+			}
+
+			if (fail == 1) {
+
+				free(duplicate->r);
+				free(duplicate->g);
+				free(duplicate->b);
+				free(duplicate);
+
+				duplicate = NULL;
+
+			}
+
+		}
+
+	}
+
+	return duplicate;
+
+}
 
 /*
  *

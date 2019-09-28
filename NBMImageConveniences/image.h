@@ -9,6 +9,8 @@
 #ifndef image_h
 #define image_h
 
+#include <CxImage/CxImage/ximage.h>
+
 /*
  *
  * Enumerates the supported image file formats.
@@ -35,7 +37,6 @@ typedef enum {
 
 typedef struct {
 
-    unsigned char bpp;
     unsigned int width;
     unsigned int height;
 
@@ -52,7 +53,7 @@ typedef struct {
  * PNG, JPEG, BMP and TIFF file formats.
  *
  * If the image was successfully loaded, the image pointer will
- * reference a valid instance of the structure NBMImage initialized
+ * reference a valid instance of the structure NBMImage, initialized
  * with the data extracted from the file at the given path.
  *
  * @param path Path to an image file.
@@ -64,14 +65,27 @@ void loadImageFromPath(char * path, NBMImage ** image);
 
 /*
  *
- * ...
+ * This function writes an (NBMImage) image to a given file path.
  *
- * @param image ...
- * @param path ...
+ * @param image The NBMImage to persist.
+ * @param path The path to store the image.
+ * @param format The format of the file.
+ *
+ * @return Returns 0 when the operation succeeds.
  *
  */
 
- char persistImage(NBMImage * image, char * path);
+ char persistImage(NBMImage * image, char * path, ImageFileFormat format);
+
+/*
+ *
+ * ...
+ *
+ * @param image ...
+ *
+ */
+
+NBMImage * duplicateImage(NBMImage * image);
 
 /*
  *

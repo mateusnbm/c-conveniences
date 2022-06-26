@@ -2,7 +2,7 @@
  *
  * image.cpp
  *
- * Created by Mateus Nunes de B Magalhaes on 6/23/19.
+ * Created by Mateus Nunes de B Magalhaes on 23/06/19.
  * Copyright © 2019 mateusnbm. All rights reserved.
  *
  */
@@ -11,18 +11,17 @@
 
 /*
  *
- * This function returns the minimum number of bits per pixels that each
- * supported image file format accepts.
+ * Minimum bits per pixel that the formats accepts.
  *
  * @param format The image file format.
  *
- * @return Minimum bits per pixels that the formats accepts.
+ * @return Minimum bits per pixel that the formats accepts.
  *
  */
 
 unsigned char minimumBppForFileFormat(ImageFileFormat format) {
 
-	unsigned char bpp;
+	uint8_t bpp;
 
     switch (format) {
 
@@ -53,17 +52,19 @@ unsigned char minimumBppForFileFormat(ImageFileFormat format) {
  *
  * @param data The data stream.
  *
+ * @return The file format.
+ *
  */
 
-ImageFileFormat discoverImageFileFormatFromData(const unsigned char * data) {
+ImageFileFormat discoverImageFileFormatFromData(const uint8_t * data) {
 
 	ImageFileFormat format = ImageFileFormatUnknown;
 
-	const unsigned char pngHeader[] =				{ 0x89, 0x50, 0x4E, 0x47 };
-	const unsigned char jpgHeader[] =				{ 0xFF, 0xD8, 0xFF };
-	const unsigned char bmpHeader[] =				{ 0x42, 0x4D };
-	const unsigned char tiffBigEndianHeader[] =		{ 0x4D, 0x4D, 0x00, 0x2A };
-	const unsigned char tiffLittleEndianHeader[] =	{ 0x49, 0x49, 0x2A, 0x00 };
+	const uint8_t pngHeader[] 				= { 0x89, 0x50, 0x4E, 0x47 };
+	const uint8_t jpgHeader[] 				= { 0xFF, 0xD8, 0xFF       };
+	const uint8_t bmpHeader[] 				= { 0x42, 0x4D             };
+	const uint8_t tiffBigEndianHeader[] 	= { 0x4D, 0x4D, 0x00, 0x2A };
+	const uint8_t tiffLittleEndianHeader[] 	= { 0x49, 0x49, 0x2A, 0x00 };
 
 	if (memcmp(data, pngHeader, sizeof(pngHeader)) == 0) {
 
@@ -93,10 +94,11 @@ ImageFileFormat discoverImageFileFormatFromData(const unsigned char * data) {
 
 /*
  *
- * Translates our own ImageFileFormat enumeration to the CxImage proprietary
- * file format enumeration.
+ * Translates our own ImageFileFormat enumeration to CxImage's enumeration.
  *
  * @param fileFormat The image file format.
+ *
+ * @param The CxImage format.
  *
  */
 
@@ -132,10 +134,9 @@ uint32_t translateImageFormatToCxImageFormat(ImageFileFormat fileFormat) {
 /*
  * Calculates the size of a given file.
  *
- * @param path Path to a file.
+ * @param file_pointer The file stream.
  *
- * @return This function returns the number of bytes in the file at the given
- *         path or '-1L' if it fails to computer the file's length.
+ * @return Returns either the number of bytes in the file or -1.
  *
  */
 
@@ -162,18 +163,15 @@ long int calculateBinaryStreamLength(FILE * file_pointer) {
 
 /*
  *
- * Opens a file at a given path and loads its content into a buffer of
- * unsigned chars. The number of bytes read is returned through a pointer to
- * an integer.
+ * Opens a file at a given path and loads its content into a buffer.
  *
  * @param path Path to a file.
- * @param data Address of a pointer to an array of unsigned chars.
- * @param len Pointer to an integer that will be updated with the number
- *        of bytes read from the file.
+ * @param data Returns a pointer to a buffer.
+ * @param len Returns the number of bytes in the stream.
  *
  */
 
-void loadDataFromFilePath(unsigned char ** data, long int * len, char * path) {
+void loadDataFromFilePath(char * path, unsigned char ** data, long int * len) {
 
 	long int read = 0;
 	long int length = 0;
@@ -217,38 +215,33 @@ void loadDataFromFilePath(unsigned char ** data, long int * len, char * path) {
 
 /*
  *
- * Extracts relevant information from the CxImage and uses it to
- * generate an image representation that conforms to our own image
- * data structure. The CxImage must have 1 bits per pixel (bpp).
+ * Creates a NBMImage from a CxImage with 1 bpp.
  *
- * @param image A pointer to a NBMImage.
- * @param cxImage A pointer to a CxImage.
+ * @param cxImage The CxImage.
+ * @param image Pointer to the NBMImage.
  *
- * @return Returns 0 if the operation was successful and -1, otherwise.
+ * @return Returns 0 if the operation was successful and -1 otherwise.
  *
  */
 
-char loadImageFrom1BppCxImage(NBMImage * image, CxImage * cxImage) {
+char loadImageFrom1BppCxImage(CxImage * cxImage, NBMImage * image) {
 
 	char status = 0;
 
-	int row = 0;
-	int column = 0;
-	int lindex = 0;
 	unsigned char * baddr = cxImage->GetBits();
 	unsigned char * caddr = cxImage->GetBits();
 
-	unsigned int byteIndex = 0;
-	unsigned char byteValue = 0;
-	unsigned char bitIndex = 0;
-	unsigned char bitValue = 0;
-	unsigned int colorIndex = 0;
+	unsigned int  byteIndex  = 0;
+	unsigned char byteValue  = 0;
+	unsigned char bitIndex   = 0;
+	unsigned char bitValue   = 0;
+	unsigned int  colorIndex = 0;
 
-	unsigned char bpp = cxImage->GetBpp();
-	unsigned int width = cxImage->GetWidth();
-	unsigned int height = cxImage->GetHeight();
-	unsigned int length = (width * height);
-	unsigned int bytesPerRow = cxImage->GetEffWidth();
+	unsigned char bpp    	  = cxImage->GetBpp();
+	unsigned int  width  	  = cxImage->GetWidth();
+	unsigned int  height 	  = cxImage->GetHeight();
+	unsigned int  length      = (width * height);
+	unsigned int  bytesPerRow = cxImage->GetEffWidth();
 
 	unsigned char * bmpHeader = (unsigned char *) cxImage->GetDIB();
 	unsigned char * bmpColorTable = (bmpHeader + sizeof(BITMAPINFOHEADER));
@@ -267,21 +260,21 @@ char loadImageFrom1BppCxImage(NBMImage * image, CxImage * cxImage) {
 
 	} else {
 
-		for (row = (height-1); row >= 0; row--) {
+		for (int row = (height-1), index = 0; row >= 0; row--) {
 
 			caddr = (baddr + (row * bytesPerRow));
 
-			for (column = 0; column < width; column++, lindex++) {
+			for (int column = 0; column < width; column++, index++) {
 
-				byteIndex = (column >> 3);
-				byteValue = caddr[byteIndex];
-				bitIndex = (7 - (column % 8));
-				bitValue = ((byteValue & (0x1 << bitIndex)) >> bitIndex);
+				byteIndex  = (column >> 3);
+				byteValue  = caddr[byteIndex];
+				bitIndex   = (7 - (column % 8));
+				bitValue   = ((byteValue & (0x1 << bitIndex)) >> bitIndex);
 				colorIndex = (bitValue * sizeof(RGBQUAD));
 
-				r[lindex] = (unsigned char) bmpColorTable[colorIndex];
-				g[lindex] = r[lindex];
-				b[lindex] = r[lindex];
+				r[index] = (unsigned char) bmpColorTable[colorIndex+2];
+				g[index] = (unsigned char) bmpColorTable[colorIndex+1];
+				b[index] = (unsigned char) bmpColorTable[colorIndex+0];
 
 			}
 
@@ -302,38 +295,110 @@ char loadImageFrom1BppCxImage(NBMImage * image, CxImage * cxImage) {
 
 /*
  *
- * Extracts relevant information from the CxImage and uses it to
- * generate an image representation that conforms to our own image
- * data structure. The CxImage must have 4 bits per pixel (bpp).
+ * Creates a NBMImage from a CxImage with 4 bpp.
  *
- * @param image A pointer to a NBMImage.
- * @param cxImage A pointer to a CxImage.
+ * @param cxImage The CxImage.
+ * @param image Pointer to the NBMImage.
  *
- * @return Returns 0 if the operation was successful and -1, otherwise.
+ * @return Returns 0 if the operation was successful and -1 otherwise.
  *
  */
 
-char loadImageFrom4BppCxImage(NBMImage * image, CxImage * cxImage) {
+char loadImageFrom4BppCxImage(CxImage * cxImage, NBMImage * image) {
 
 	char status = 0;
 
-	int row = 0;
-	int column = 0;
-	int lindex = 0;
 	unsigned char * baddr = cxImage->GetBits();
 	unsigned char * caddr = cxImage->GetBits();
 
-	unsigned int byteIndex = 0;
-	unsigned char byteValue = 0;
-	unsigned char lsbIndex = 0;
-	unsigned char bitValue = 0;
+	unsigned int  byteIndex  = 0;
+	unsigned char byteValue  = 0;
+	unsigned char lsbIndex   = 0;
+	unsigned char quadValue  = 0;
+	unsigned int  colorIndex = 0;
+
+	unsigned char bpp 		  = cxImage->GetBpp();
+	unsigned int  width 	  = cxImage->GetWidth();
+	unsigned int  height 	  = cxImage->GetHeight();
+	unsigned int  length 	  = (width * height);
+	unsigned int  bytesPerRow = cxImage->GetEffWidth();
+
+	unsigned char * bmpHeader     = (unsigned char *) cxImage->GetDIB();
+	unsigned char * bmpColorTable = (bmpHeader + sizeof(BITMAPINFOHEADER));
+
+	unsigned char * r = (unsigned char *) malloc(sizeof(unsigned char)*length);
+	unsigned char * g = (unsigned char *) malloc(sizeof(unsigned char)*length);
+	unsigned char * b = (unsigned char *) malloc(sizeof(unsigned char)*length);
+
+	if (r == NULL || g == NULL || b == NULL) {
+
+		status = -1;
+
+		free(r);
+		free(g);
+		free(b);
+
+	} else {
+
+		for (int row = (height-1), index = 0; row >= 0; row--) {
+
+			caddr = (baddr + (row * bytesPerRow));
+
+			for (int column = 0; column < width; column++, index++) {
+
+				byteIndex  = (column >> 1);
+				byteValue  = caddr[byteIndex];
+
+				lsbIndex   = ((1 - (column % 2)) * 4);
+				quadValue  = ((byteValue & (0x0F << lsbIndex)) >> lsbIndex);
+				colorIndex = (quadValue * sizeof(RGBQUAD));
+
+				r[index] = (unsigned char) bmpColorTable[colorIndex+2];
+				g[index] = (unsigned char) bmpColorTable[colorIndex+1];
+				b[index] = (unsigned char) bmpColorTable[colorIndex+0];
+
+			}
+
+		}
+
+		image->width = width;
+		image->height = height;
+
+		image->r = r;
+		image->g = g;
+		image->b = b;
+
+	}
+
+	return status;
+
+}
+
+/*
+ *
+ * Creates a NBMImage from a CxImage with 8 bpp.
+ *
+ * @param cxImage The CxImage.
+ * @param image Pointer to the NBMImage.
+ *
+ * @return Returns 0 if the operation was successful and -1 otherwise.
+ *
+ */
+
+char loadImageFrom8BppCxImage(CxImage * cxImage, NBMImage * image) {
+
+	char status = 0;
+
+	unsigned char * baddr = cxImage->GetBits();
+	unsigned char * caddr = cxImage->GetBits();
+
 	unsigned int colorIndex = 0;
 
-	unsigned char bpp = cxImage->GetBpp();
-	unsigned int width = cxImage->GetWidth();
-	unsigned int height = cxImage->GetHeight();
-	unsigned int length = (width * height);
-	unsigned int bytesPerRow = cxImage->GetEffWidth();
+	unsigned char bpp 		  = cxImage->GetBpp();
+	unsigned int  width 	  = cxImage->GetWidth();
+	unsigned int  height 	  = cxImage->GetHeight();
+	unsigned int  length 	  = (width * height);
+	unsigned int  bytesPerRow = cxImage->GetEffWidth();
 
 	unsigned char * bmpHeader = (unsigned char *) cxImage->GetDIB();
 	unsigned char * bmpColorTable = (bmpHeader + sizeof(BITMAPINFOHEADER));
@@ -352,21 +417,17 @@ char loadImageFrom4BppCxImage(NBMImage * image, CxImage * cxImage) {
 
 	} else {
 
-		for (row = (height-1); row >= 0; row--) {
+		for (int row = (height-1), index = 0; row >= 0; row--) {
 
 			caddr = (baddr + (row * bytesPerRow));
 
-			for (column = 0; column < width; column++, lindex++) {
+			for (int column = 0; column < width; column++, index++) {
 
-				byteIndex = ((column * 4) >> 3);
-				byteValue = caddr[byteIndex];
-				lsbIndex = ((1 - (column % 2)) * 4);
-				bitValue = ((byteValue & (0xF << lsbIndex)) >> lsbIndex);
-				colorIndex = (bitValue * sizeof(RGBQUAD));
+				colorIndex = ((*caddr++) * sizeof(RGBQUAD));
 
-				r[lindex] = (unsigned char) bmpColorTable[colorIndex];
-				g[lindex] = r[lindex];
-				b[lindex] = r[lindex];
+				r[index]   = (unsigned char) bmpColorTable[colorIndex+2];
+				g[index]   = (unsigned char) bmpColorTable[colorIndex+1];
+				b[index]   = (unsigned char) bmpColorTable[colorIndex+0];
 
 			}
 
@@ -387,31 +448,26 @@ char loadImageFrom4BppCxImage(NBMImage * image, CxImage * cxImage) {
 
 /*
  *
- * Extracts relevant information from the CxImage and uses it to
- * generate an image representation that conforms to our own image
- * data structure. The CxImage must have 8 bits per pixel (bpp).
+ * Creates a NBMImage from a CxImage with 24 bpp.
  *
- * @param image A pointer to a NBMImage.
- * @param cxImage A pointer to a CxImage.
+ * @param cxImage The CxImage.
+ * @param image Pointer to the NBMImage.
  *
- * @return Returns 0 if the operation was successful and -1, otherwise.
+ * @return Returns 0 if the operation was successful and -1 otherwise.
  *
  */
 
-char loadImageFrom8BppCxImage(NBMImage * image, CxImage * cxImage) {
+char loadImageFrom24BppCxImage(CxImage * cxImage, NBMImage * image) {
 
 	char status = 0;
 
-	int row = 0;
-	int column = 0;
-	int lindex = 0;
 	unsigned char * baddr = cxImage->GetBits();
 	unsigned char * caddr = cxImage->GetBits();
 
-	unsigned char bpp = cxImage->GetBpp();
-	unsigned int width = cxImage->GetWidth();
-	unsigned int height = cxImage->GetHeight();
-	unsigned int length = (width * height);
+	unsigned char bpp 		 = cxImage->GetBpp();
+	unsigned int width 		 = cxImage->GetWidth();
+	unsigned int height 	 = cxImage->GetHeight();
+	unsigned int length 	 = (width * height);
 	unsigned int bytesPerRow = cxImage->GetEffWidth();
 
 	unsigned char * r = (unsigned char *) malloc(sizeof(unsigned char)*length);
@@ -428,85 +484,15 @@ char loadImageFrom8BppCxImage(NBMImage * image, CxImage * cxImage) {
 
 	} else {
 
-		for (row = (height-1); row >= 0; row--) {
+		for (int row = (height-1), index = 0; row >= 0; row--) {
 
 			caddr = (baddr + (row * bytesPerRow));
 
-			for (column = 0; column < width; column++, lindex++) {
+			for (int column = 0; column < width; column++, index++) {
 
-				r[lindex] = (unsigned char) (*caddr++);
-				g[lindex] = r[lindex];
-				b[lindex] = r[lindex];
-
-			}
-
-		}
-
-		image->width = width;
-		image->height = height;
-
-		image->r = r;
-		image->g = g;
-		image->b = b;
-
-	}
-
-	return status;
-
-}
-
-/*
- *
- * Extracts relevant information from the CxImage and uses it to
- * generate an image representation that conforms to our own image
- * data structure. The CxImage must have 24 bits per pixel (bpp).
- *
- * @param image A pointer to a NBMImage.
- * @param cxImage A pointer to a CxImage.
- *
- * @return Returns 0 if the operation was successful and -1, otherwise.
- *
- */
-
-char loadImageFrom24BppCxImage(NBMImage * image, CxImage * cxImage) {
-
-	char status = 0;
-
-	int row = 0;
-	int column = 0;
-	int lindex = 0;
-	unsigned char * baddr = cxImage->GetBits();
-	unsigned char * caddr = cxImage->GetBits();
-
-	unsigned char bpp = cxImage->GetBpp();
-	unsigned int width = cxImage->GetWidth();
-	unsigned int height = cxImage->GetHeight();
-	unsigned int length = (width * height);
-	unsigned int bytesPerRow = cxImage->GetEffWidth();
-
-	unsigned char * r = (unsigned char *) malloc(sizeof(unsigned char)*length);
-	unsigned char * g = (unsigned char *) malloc(sizeof(unsigned char)*length);
-	unsigned char * b = (unsigned char *) malloc(sizeof(unsigned char)*length);
-
-	if (r == NULL || g == NULL || b == NULL) {
-
-		status = -1;
-
-		free(r);
-		free(g);
-		free(b);
-
-	} else {
-
-		for (row = (height-1); row >= 0; row--) {
-
-			caddr = (baddr + (row * bytesPerRow));
-
-			for (column = 0; column < width; column++, lindex++) {
-
-				b[lindex] = (unsigned char) (*caddr++);
-				g[lindex] = (unsigned char) (*caddr++);
-				r[lindex] = (unsigned char) (*caddr++);
+				b[index] = (unsigned char) (*caddr++);
+				g[index] = (unsigned char) (*caddr++);
+				r[index] = (unsigned char) (*caddr++);
 
 			}
 
@@ -546,19 +532,19 @@ char loadImageFromCxImage(NBMImage * image, CxImage * cxImage) {
 	switch (cxImage->GetBpp()) {
 
 		case 1:
-			status = loadImageFrom1BppCxImage(image, cxImage);
+			status = loadImageFrom1BppCxImage(cxImage, image);
 			break;
 
 		case 4:
-			status = loadImageFrom4BppCxImage(image, cxImage);
+			status = loadImageFrom4BppCxImage(cxImage, image);
 			break;
 
 		case 8:
-			status = loadImageFrom8BppCxImage(image, cxImage);
+			status = loadImageFrom8BppCxImage(cxImage, image);
 			break;
 
 		case 24:
-			status = loadImageFrom24BppCxImage(image, cxImage);
+			status = loadImageFrom24BppCxImage(cxImage, image);
 			break;
 
 	}
@@ -569,14 +555,15 @@ char loadImageFromCxImage(NBMImage * image, CxImage * cxImage) {
 
 /*
  *
- * ...
+ * Creates a CxImage with 24 bpp from a NBMImage.
  *
- * @param image ...
- * @param path ...
+ * @param image The source NBMImage.
+ * @param cxImage The destination CxImage.
+ * @param format The desired cxImage format.
  *
  */
 
-void load24BppCxImageFromImage(CxImage * cxImage, NBMImage * image, ImageFileFormat format) {
+void load24BppCxImageFromImage(NBMImage * image, CxImage * cxImage, ImageFileFormat format) {
 
 	if (cxImage != NULL && image != NULL) {
 
@@ -614,31 +601,30 @@ void load24BppCxImageFromImage(CxImage * cxImage, NBMImage * image, ImageFileFor
 
 /*
  *
- * ...
+ * Creates a CxImage from a NBMImage.
  *
- * @param cxImage ...
- * @param image ...
+ * @param image The source NBMImage.
+ * @param cxImage The destination CxImage.
+ * @param format The desired cxImage format.
  *
  */
 
-void loadCxImageFromImage(CxImage * cxImage, NBMImage * image, ImageFileFormat format) {
+void loadCxImageFromImage(NBMImage * image, CxImage * cxImage, ImageFileFormat format) {
 
-	load24BppCxImageFromImage(cxImage, image, format);
+	load24BppCxImageFromImage(image, cxImage, format);
 
 }
 
 /*
  *
- * Generates an image representation (NBMImage) from the image
- * referenced by the given file path. This function supports the
- * PNG, JPEG, BMP and TIFF file formats.
+ * Generates a NBMImage representation from the image at the given
+ * file path. This function supports PNG, JPEG, BMP and TIFF formats.
  *
- * If the image was successfully loaded, the image pointer will
- * reference a valid instance of the structure NBMImage initialized,
- * with the data extracted from the file at the given path.
+ * If the image was properly loaded, the pointer will reference a valid
+ * instance of a NBMImage data structure, otherwise, will point to NULL.
  *
- * @param path Path to an image file.
- * @param image Address of a pointer to an NBMImage data structure.
+ * @param path Path to the image file.
+ * @param image Address of a pointer to a NBMImage.
  *
  */
 
@@ -650,7 +636,7 @@ void loadImageFromPath(char * path, NBMImage ** image) {
 
 	*image = NULL;
 
-	loadDataFromFilePath(&buffer, &length, path);
+	loadDataFromFilePath(path, &buffer, &length);
 
 	if (buffer != NULL) {
 
@@ -681,15 +667,13 @@ void loadImageFromPath(char * path, NBMImage ** image) {
 
 /*
  *
- * This function writes a NBMImage to a given file path. The current
- * implementation will store all images with 24 bits per pixel and 72
- * dots per inch on both x and y axis.
+ * Writes a NBMImage to the given file path.
  *
- * @param image The NBMImage to persist.
+ * @param image The image to persist.
  * @param path The path to store the image.
- * @param format The format of the file.
+ * @param format The file format to write.
  *
- * @return Returns 0 when the operation succeeds.
+ * @return Returns 0 when the write operation succeeds.
  *
  */
 
@@ -704,17 +688,13 @@ char persistImage(NBMImage * image, char * path, ImageFileFormat format) {
 
 		int32_t length = 0;
 		uint8_t * data = NULL;
-		long int wrote = 0;
+		uint32_t wrote = 0;
 
-		loadCxImageFromImage(cxImage, image, format);
+		loadCxImageFromImage(image, cxImage, format);
+
 		cxImage->Encode(data, length, cxImageFormat);
 		cxImage->SetXDPI(72);
 		cxImage->SetYDPI(72);
-
-		//image.SetCodecOption(COMPRESSION_JPEG, CXIMAGE_FORMAT_TIF);
-        //image.SetJpegQuality(90);
-		//image.SetCodecOption(8, CXIMAGE_FORMAT_PNG);
-		//image.SetJpegQuality(90);
 
 		wrote = fwrite(data, sizeof(unsigned char), length, file_pointer);
 
@@ -737,9 +717,9 @@ char persistImage(NBMImage * image, char * path, ImageFileFormat format) {
 
 /*
  *
- * ...
+ * Creates a duplicate (deep copy) of a NBMImage.
  *
- * @param image ...
+ * @param image The image to duplicate.
  *
  */
 
@@ -755,16 +735,16 @@ NBMImage * duplicateImage(NBMImage * image) {
 
 			char fail = 0;
 
-			unsigned int w = image->width;
-			unsigned int h = image->height;
-			unsigned int l = ((w * h) * sizeof(unsigned char));
+			uint32_t w = image->width;
+			uint32_t h = image->height;
+			uint32_t l = ((w * h) * sizeof(uint8_t));
 
 			duplicate->width = w;
 			duplicate->height = h;
 
-			duplicate->r = (unsigned char *) malloc(l);
-			duplicate->g = (unsigned char *) malloc(l);
-			duplicate->b = (unsigned char *) malloc(l);
+			duplicate->r = (uint8_t *) malloc(l);
+			duplicate->g = (uint8_t *) malloc(l);
+			duplicate->b = (uint8_t *) malloc(l);
 
 			fail = duplicate->r == NULL || duplicate->g == NULL || duplicate->b == NULL;
 
@@ -799,10 +779,9 @@ NBMImage * duplicateImage(NBMImage * image) {
 
 /*
  *
- * Releases the dynamically allocated memory referenced by the
- * image data structure and, also, the given pointer.
+ * Releases the given NBMImage.
  *
- * @param image Pointer to a NBMImage.
+ * @param image The image to release.
  *
  */
 

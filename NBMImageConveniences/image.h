@@ -1,7 +1,8 @@
 /*
- * image.cpp
  *
- * Created by Mateus Nunes de B Magalhaes on 6/23/17.
+ * image.h
+ *
+ * Created by Mateus Nunes de B Magalhaes on 23/06/19.
  * Copyright © 2019 mateusnbm. All rights reserved.
  *
  */
@@ -30,34 +31,31 @@ typedef enum {
 
 /*
  *
- * Data structure containing the memory blocks needed to allow our library
- * to load, manipulate and persist images.
+ * Data structure representing an image.
  *
  */
 
 typedef struct {
 
-    unsigned int width;
-    unsigned int height;
+    uint32_t width;
+    uint32_t height;
 
-    unsigned char * r;
-    unsigned char * g;
-    unsigned char * b;
+    uint8_t * r;
+    uint8_t * g;
+    uint8_t * b;
 
 } NBMImage;
 
 /*
  *
- * Generates an image representation (NBMImage) from the image
- * referenced by the given file path. This function supports the
- * PNG, JPEG, BMP and TIFF file formats.
+ * Generates a NBMImage representation from the image at the given
+ * file path. This function supports PNG, JPEG, BMP and TIFF formats.
  *
- * If the image was successfully loaded, the image pointer will
- * reference a valid instance of the structure NBMImage, initialized
- * with the data extracted from the file at the given path.
+ * If the image was properly loaded, the pointer will reference a valid
+ * instance of a NBMImage data structure, otherwise, will point to NULL.
  *
- * @param path Path to an image file.
- * @param image Address of a pointer to an NBMImage data structure.
+ * @param path Path to the image file.
+ * @param image Address of a pointer to a NBMImage.
  *
  */
 
@@ -65,13 +63,13 @@ void loadImageFromPath(char * path, NBMImage ** image);
 
 /*
  *
- * This function writes an (NBMImage) image to a given file path.
+ * Writes a NBMImage to the given file path.
  *
- * @param image The NBMImage to persist.
+ * @param image The image to persist.
  * @param path The path to store the image.
- * @param format The format of the file.
+ * @param format The file format to write.
  *
- * @return Returns 0 when the operation succeeds.
+ * @return Returns 0 when the write operation succeeds.
  *
  */
 
@@ -79,9 +77,9 @@ void loadImageFromPath(char * path, NBMImage ** image);
 
 /*
  *
- * ...
+ * Creates a duplicate (deep copy) of a NBMImage.
  *
- * @param image ...
+ * @param image The image to duplicate.
  *
  */
 
@@ -89,10 +87,9 @@ NBMImage * duplicateImage(NBMImage * image);
 
 /*
  *
- * Releases the dynamically allocated memory referenced by the
- * image data structure and, also, the given pointer.
+ * Releases the given NBMImage.
  *
- * @param image Pointer to a NBMImage.
+ * @param image The image to release.
  *
  */
 

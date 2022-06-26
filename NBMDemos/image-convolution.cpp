@@ -11,15 +11,20 @@
 #include <stdlib.h>
 
 #include "image.h"
+#include "processing.h"
 
 int main(int argc, const char * argv[]) {
 
     NBMImage * image = NULL;
 
+    loadImageFromPath("NBMDemos/images/teste.png", &image);
     //loadImageFromPath("NBMDemos/images/a3x3x1.png", &image);
+    //loadImageFromPath("NBMDemos/images/a3x3x8.png", &image);
     //loadImageFromPath("NBMDemos/images/parrot1bit.png", &image);
     //loadImageFromPath("NBMDemos/images/parrot4bit.png", &image);
-    loadImageFromPath("NBMDemos/images/lena220x220.png", &image);
+    //loadImageFromPath("NBMDemos/images/lena220x220.png", &image);
+    //loadImageFromPath("NBMDemos/images/pen8bit.png", &image);
+    //loadImageFromPath("NBMDemos/images/house.png", &image);
 
     if (image != NULL) {
 
@@ -27,9 +32,12 @@ int main(int argc, const char * argv[]) {
 
         if (duplicate != NULL) {
 
-            // ...
+            float kernel[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
 
-            persistImage(duplicate, "NBMDemos/images/mateus.png", ImageFileFormatPNG);
+            convolve(duplicate, kernel, 3, 3);
+
+            persistImage(image, "NBMDemos/images/mateus_original.png", ImageFileFormatPNG);
+            persistImage(duplicate, "NBMDemos/images/mateus_duplicate.png", ImageFileFormatPNG);
 
         }
 
